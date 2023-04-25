@@ -1,0 +1,27 @@
+{
+  "name": "@gardosen/cypress-parallelize",
+  "version": "1.0.0",
+  "description": "cli command to parallelize cypress executions",
+  "main": "src/index.js",
+  "keywords": ["cli", "cypress-parallelize"],
+  "author": "Marco Bierbach",
+  "license": "ISC",
+  "bin": {
+    "@gardosen/create-project": "bin/cypress-parallelize",
+    "create-project": "bin/cypress-parallelize"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "arg": "^5.0.2",
+    "esm": "^3.2.25"
+  },
+  "bugs": {
+    "url": "https://github.com/Gardosen/cypress-parallelize/issues"
+  },
+  "homepage": "https://github.com/Gardosen/cypress-parallelize#readme"
+}
