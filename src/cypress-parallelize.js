@@ -1,3 +1,5 @@
+import fs from "fs";
+
 const { exec } = require('child_process');
 const { promisify } = require('util');
 const execAsync = promisify(exec);
@@ -19,6 +21,8 @@ export async function executeCommandXTimes(args) {
     for (let i = 1; i < options.amount+1; i++) {
         try {
             const { stdout } = execAsync(`npx cypress run --browser ${options.browser} --config-file ${options.configFile} --env allure=${options.allure},tags="${options.tags} and @runner-${i}"`);
+            const logStream = fs.createWriteStream(`logs/log-${i}.txt`, { flags: 'a' });
+            stdout.pipe(logStream);
             //TODO, parse the output to a runner file and not the cli yet
             //TODO: give each runner an own color and a pre fix to show what runner the cli output comes from (tail filter)
         } catch (error) {
