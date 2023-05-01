@@ -23,8 +23,6 @@ export async function executeCommandXTimes(args) {
             const { stdout } = execAsync(`npx cypress run --browser ${options.browser} --config-file ${options.configFile} --env allure=${options.allure},tags="${options.tags} and @runner-${i}"`);
             const logStream = fs.createWriteStream(`logs/log-${i}.txt`, { flags: 'a' });
             stdout.pipe(logStream);
-            //TODO, parse the output to a runner file and not the cli yet
-            //TODO: give each runner an own color and a pre fix to show what runner the cli output comes from (tail filter)
         } catch (error) {
             console.error(`Iteration ${i + 1} - Error: ${error.message}`);
         }
