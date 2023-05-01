@@ -1,9 +1,9 @@
 import path from "path";
 import fs from "fs";
-const { scope } = require("./scope");
+const scope = require("./scope");
 
-export function cleanFeatureFiles(options) {
-    const filesToClean = options.specFile ? [options.specFile] : scope.FEATURE_FILE_LIST;
+export function cleanFeatureFiles() {
+    const filesToClean = scope.options.specFile ? [scope.options.specFile] : scope.featureFileList;
 
     const cleanedFiles = filesToClean.map(file => {
         removeRunnerTagFromFile(file);
@@ -18,13 +18,14 @@ function removeRunnerTagFromFile(file) {
 
     const data = fs.readFileSync(filePath, 'utf8').split('\n');
     const handledData = data.map(line => {
-        if (line.includes(scope.RUNNER_ANNOTATION)) {
-            return line.replace(new RegExp(`\s{0,}${scope.RUNNER_ANNOTATION}\d+`, "g"), "");
+        if (line.includes(scope.options.runnerAnnotation)) {
+            console.log(`Going to return line ${line.replace(new RegExp(`\s{0,}${scope.options.runnerAnnotation}\d+`, "g"), "")}`);
+            return line.replace(new RegExp(`\s{0,}${scope.options.runnerAnnotation}\d+`, "g"), "");
         }
         return line;
     }).join('\n');
 
     fs.writeFileSync(filePath, handledData);
-    console.log(`Successfully removed all ${scope.RUNNER_ANNOTATION}X annotation in ${filePath}`);
+    console.log(`Successfully removed all ${scope.options.runnerAnnotation} annotation in ${filePath}`);
 }
 

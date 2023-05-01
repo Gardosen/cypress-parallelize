@@ -1,9 +1,9 @@
 import fs from "fs";
-const { scope } = require("./scope");
+const scope = require("./scope");
 
-export function assignTestRunnerAnnotation(options){
+export function assignTestRunnerAnnotation(){
     console.log("Test Runner Assignment");
-    const filesToHandle = options.specFile != null? [options.specFile] : scope.FEATURE_FILE_LIST;
+    const filesToHandle = scope.options.specFile != null? [scope.options.specFile] : scope.featureFileList;
 
     const filesHandled = filesToHandle.map(file => {
         console.log(`Handling file ${file}`);
@@ -14,14 +14,14 @@ export function assignTestRunnerAnnotation(options){
     console.log(`Successfully handled ${filesHandled.length} feature files.`);
 }
 
-function addTagToScenariosOfFile(file, options) {
+function addTagToScenariosOfFile(file) {
     console.log(`Assigning Test Runners to file [${file}]`);
     const lines = fs.readFileSync(file, "utf-8").split('\n');
     const newLines = lines.map(line => {
-        if (line.includes(options.tests) && !line.includes(`${scope.RUNNER_ANNOTATION}${scope.RUNNER_NUMBER}`)) {
-            console.log(`Adding ${scope.RUNNER_ANNOTATION}${scope.RUNNER_NUMBER} to line [${line}]`);
-            line = line + ` ${scope.RUNNER_ANNOTATION}${scope.RUNNER_NUMBER}`;
-            scope.RUNNER_NUMBER = (scope.RUNNER_NUMBER++%options.amount)+1;
+        if (line.includes(scope.options.tests) && !line.includes(`${scope.options.runnerAnnotation}${scope.runnerNumber}`)) {
+            console.log(`Adding ${scope.options.runnerAnnotation}${scope.runnerNumber} to line [${line}]`);
+            line = line + ` ${scope.options.runnerAnnotation}${scope.runnerNumber}`;
+            scope.runnerNumber = (scope.runnerNumber++%scope.options.runnerAmount)+1;
         }
         return line;
     });

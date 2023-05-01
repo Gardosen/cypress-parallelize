@@ -1,11 +1,7 @@
 scope = {
-    RUNNER_NUMBER: 1,
-    RUNNER_ANNOTATION: "@runner-",
-    FEATURE_FILE_LIST: []
+    options: undefined,
+    runnerNumber: 1,
+    featureFileList:[]
 }
 
-module.exports = {
-    scope
-};
-
-
+module.exports = scope;
