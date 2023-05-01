@@ -10,15 +10,7 @@ export function parseArgumentsIntoOptions(rawArgs) {
             '--cypress-tests-path': String,
             '--allure': Boolean,
             '--config-file': String,
-            '--browser': String,
-            //TODO: think about a good way to suppor all of them in short form
-            //'-r': '--runner-amount',
-            //'-a': '--allure',
-            //'-t': '--tags',
-            //'-s': '--spec',
-            //'-c': '--cypress-tests-path',
-            //'-f': '--config-file',
-            //'-b': '--browser'
+            '--browser': String
         },
         {
             permissive: false,
