@@ -23,7 +23,7 @@ npm install cypress-parallize --save-dev
 In order to execute a cypress execution with the support of cypress-parallize you can use the following command and parameters
 
 ```bash
-cypress-parallize [options]
+cypress-parallelize [options]
 ```
 
 ### Options
