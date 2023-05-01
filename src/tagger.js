@@ -11,7 +11,7 @@ export function assignTestRunnerAnnotation(options){
         return file;
     });
 
-    console.log(`Successfully handled ${filesToHandle.length} feature files.`);
+    console.log(`Successfully handled ${filesHandled.length} feature files.`);
 }
 
 function addTagToScenariosOfFile(file, options) {

@@ -1,8 +1,5 @@
-import arg from 'arg';
 const { exec } = require('child_process');
 const { promisify } = require('util');
-const fs = require('fs');
-const path = require("path");
 const execAsync = promisify(exec);
 const { scanFeatureFiles } = require("./scanner");
 const { assignTestRunnerAnnotation } = require("./tagger");
