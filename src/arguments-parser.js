@@ -13,7 +13,8 @@ export function parseArgumentsIntoOptions(rawArgs) {
             '--allure': Boolean,
             '--config-file': String,
             '--browser': String,
-            '--dry-run': Boolean
+            '--dry-run': Boolean,
+            //'--clean-after': Boolean
         },
         {
             permissive: false,
@@ -27,9 +28,10 @@ export function parseArgumentsIntoOptions(rawArgs) {
         tests: args['--tests'] || "@", //annotation which is supposed to be used to identify all tests that should get a runner assigned
         specFile: args['--spec'] || null, //path to a specific spec feature file
         featureFolder: args['--feature-folder'] || "./cypress/e2e", //path to the root folder in which all feature files are stored
-        allure: args['--allure'] !== false, //should allure be enabled or disabled
+        allure: args['--allure'] !== undefined, //should allure be enabled or disabled
         configFile: args['--config-file'] || "cypress.json", //string that is forwarded to cypress to identify the config-file to be used for the execution
         browser: args['--browser'] || "chrome", //string that is forwarded to cypress to identify the browser to be used for the execution
-        dryRun: args['--dry-run'] !== false
+        dryRun: args['--dry-run'] !== undefined, //if true, the real cypress command won't be executed
+        //cleanAfter: args['--clean-after'] !== true //WIP: if true, the feature files are cleaned directly after the test run
     };
 }
