@@ -19,8 +19,7 @@ function removeRunnerTagFromFile(file) {
     const data = fs.readFileSync(filePath, 'utf8').split('\n');
     const handledData = data.map(line => {
         if (line.includes(scope.options.runnerAnnotation)) {
-            console.log(`Going to return line ${line.replace(new RegExp(`\s{0,}${scope.options.runnerAnnotation}\d+`, "g"), "")}`);
-            return line.replace(new RegExp(`\s{0,}${scope.options.runnerAnnotation}\d+`, "g"), "");
+            return line.replace(new RegExp(`\\s*${scope.options.runnerAnnotation}\\d+`, "g"), "");
         }
         return line;
     }).join('\n');

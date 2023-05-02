@@ -18,7 +18,7 @@ export async function executeCommandXTimes(args) {
     assignTestRunnerAnnotation();
 
     if( !scope.options.dryRun ) {
-        for (let i = 1; i < scope.options.runnerAmount+1; i++) {
+        for (let i = 1; i <= scope.runnerAmmountAssigned; i++) {
             try {
                 const { stdout } = execAsync(`npx cypress run --browser ${scope.options.browser} --config-file ${scope.options.configFile} --env allure=${scope.options.allure},tags="${scope.options.tags} and ${scope.options.runnerAnnotation}${i}"${scope.options.specFile != null? " --spec "+scope.options.specFile:""}`);
                 const logStream = fs.createWriteStream(`logs/log-${i}.txt`, { flags: 'a' });
