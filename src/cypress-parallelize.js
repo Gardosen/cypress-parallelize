@@ -1,4 +1,3 @@
-import fs from "fs";
 import path from "path";
 
 const { exec } = require('child_process');
@@ -18,11 +17,13 @@ export async function executeCommandXTimes(args) {
     assignTestRunnerAnnotation();
 
     if( !scope.options.dryRun ) {
-        for (let i = 1; i <= scope.runnerAmmountAssigned; i++) {
+        for (let i = 1; i <= scope.runnerAmountAssigned; i++) {
             try {
                 const { stdout } = execAsync(`npx cypress run --browser ${scope.options.browser} --config-file ${scope.options.configFile} --env allure=${scope.options.allure},tags="${scope.options.tags} and ${scope.options.runnerAnnotation}${i}"${scope.options.specFile != null? " --spec "+scope.options.specFile:""}`);
-                const logStream = fs.createWriteStream(`logs/log-${i}.txt`, { flags: 'a' });
-                stdout.pipe(logStream);
+                console.log(stdout);
+                //TODO get the pipes working to log the output to files
+                //const logStream = fs.createWriteStream(`log-${i}.txt`, { flags: 'a' });
+                //stdout.pipe(logStream);
             } catch (error) {
                 console.error(`Iteration ${i + 1} - Error: ${error.message}`);
             }

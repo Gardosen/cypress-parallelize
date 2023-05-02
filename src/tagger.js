@@ -22,7 +22,7 @@ function addTagToScenariosOfFile(file) {
             console.log(`Adding ${scope.options.runnerAnnotation}${scope.runnerNumber} to line [${line}]`);
             line = line + ` ${scope.options.runnerAnnotation}${scope.runnerNumber}`;
             scope.runnerNumber = (scope.runnerNumber++%scope.options.runnerAmount)+1;
-            scope.runnerAmmountAssigned++;
+            if(scope.runnerAmountAssigned < scope.options.runnerAmount) scope.runnerAmountAssigned++;
         }
         return line;
     });

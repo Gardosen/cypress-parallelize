@@ -1,7 +1,7 @@
 scope = {
     options: undefined,
     runnerNumber: 1,
-    runnerAmmountAssigned: 0,
+    runnerAmountAssigned: 0,
     featureFileList:[]
 }
 
