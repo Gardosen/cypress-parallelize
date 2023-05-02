@@ -1,6 +1,6 @@
 {
   "name": "@gardosen/cypress-parallelize",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "cli command to parallelize cypress executions",
   "main": "src/index.js",
   "keywords": [
