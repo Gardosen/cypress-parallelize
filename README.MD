@@ -29,6 +29,7 @@ cypress-parallelize [options]
 ### Options
 
 - `--runner-amount=<Number>`: number of tests to split into each runner.
+- `--runner-annotation=<String>,`: custom runner annotaction how it should be used for the automation. (E.g. @custom-runner)
 - `--browser=<String>`: The browser to run tests in.
 - `--config-file=<String>`: The path to your Cypress config file.
 - `--spec=<String>`: path to the feature file to be handled by the runner.

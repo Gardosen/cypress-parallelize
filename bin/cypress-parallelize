@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
 require = require('esm')(module /*, options*/);
-require('../src/cypress-parallelize').executeCommandXTimes(process.argv).then(r => console.log("Done the tests"));
+require('../src/cypress-parallelize').executeCommandXTimes(process.argv).then(r => console.log("Started the test runners"));
