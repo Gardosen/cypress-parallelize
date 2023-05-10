@@ -10,7 +10,7 @@ export async function showHelp(){
 --tags:                    tags to look for to which a runner will be assigned to (E.g. @smoke, @regression) (String)
 --tests:                   tests to execute with each runner (E.g. "@smoke and not @wip") (String)
                             - the final tests variable passed to the runner is a concatenation
-                              between the given variable and the string literal @<runner-annotation>-<number>
+                              between the given variable and the string literal <runner-annotation>-<number>
 --spec:                    spec feature file to test (String)
 --feature-folder:          feature folder to  (String)
 --config-file:             config file to use for the cypress execution (String)
