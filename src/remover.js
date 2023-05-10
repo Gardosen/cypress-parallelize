@@ -28,3 +28,24 @@ function removeRunnerTagFromFile(file) {
     console.log(`Successfully removed all ${scope.options.runnerAnnotation} annotation in ${filePath}`);
 }
 
+export function removeReportFolders() {
+    const regex = new RegExp(`${scope.options.allureReportFolderName}-${scope.options.runnerAnnotation}-\\d`); // Sucht nach Ordnern, die mit "old_" beginnen
+    const folders = fs.readdirSync(process.cwd(), { withFileTypes: true })
+        .filter(dirent => dirent.isDirectory() && regex.test(dirent.name))
+        .map(dirent => `${process.cwd()}/${dirent.name}`);
+
+
+    folders.forEach((folder) => {
+        try {
+            fs.rm(folder, { recursive: true}, ()=>{});
+            console.log(`Folder ${folder} has been deleted.`);
+        } catch (err) {
+            console.error(`Could not delete folder ${folder}:`, err);
+        }
+    });
+}
+
+export function removeRunnerLogFolder() {
+    fs.rm(path.join(process.cwd(), "runner-logs"), {recursive: true}, ()=>{});
+}
+

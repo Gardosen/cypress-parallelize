@@ -1,4 +1,10 @@
 #!/usr/bin/env node
 
+const scope  = require('../src/scope')
 require = require('esm')(module /*, options*/);
-require('../src/cypress-parallelize').executeCommandXTimes(process.argv).then(r => console.log("Started the test runners"));
+require('../src/arguments-parser').parseArgumentsIntoOptions(process.argv).then(r => {
+    if(scope.options.helpNeeded)
+        require('../src/helper').showHelp().then(r => { console.log(r)});
+    else
+        require('../src/cypress-parallelize').executeCommandXTimes().then(r => console.log("Started the test runners"));
+});
