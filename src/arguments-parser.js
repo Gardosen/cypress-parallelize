@@ -1,46 +1,133 @@
 import arg from "arg";
+
 const scope = require("./scope");
+
+export const parameterMap = {
+    runnerAmount: {
+        label: "--runner-amount",
+        type: Number,
+        description: "Amount of Runners to spawn (Number)",
+        examples: [],
+        default: 5
+    },
+    runnerAnnotation: {
+        label: "--runner-annotation",
+        type: String,
+        description: "annotation which is used for the runner assignment and execution",
+        examples: ["@runner-", "@executor"],
+        default: "@runner-"
+    },
+    tags: {
+        label: "--tags",
+        type: String,
+        description: "tags to look for to which a runner will be assigned to",
+        examples: ["@smoke", "@regression"],
+        default: "not @wip and @regression"
+    },
+    tests: {
+        label: "--tests",
+        type: String,
+        description: "annotation which is supposed to be used to identify all tests that should get a runner assigned",
+        examples: ["@regression", "@smoke", "@JIRA-4457", "@1.5.4-R2"],
+        default: "@"
+    },
+    specs: {
+        label: "--spec",
+        type: String,
+        description: "path to a specific spec feature file",
+        examples: ["cypress/e2e/google/search.feature"],
+        default: null
+    },
+    featureFolder: {
+        label: "--feature-folder",
+        type: String,
+        description: "path to the root folder in which all feature files are stored",
+        examples: ["cypress/e2e/google/"],
+        default: "cypress/e2e"
+    },
+    configFile: {
+        label: "--config-file",
+        type: String,
+        description: "string that is forwarded to cypress to identify the config-file to be used for the execution",
+        examples: ["cypress/config/prod.config.js"],
+        default: "cypress.config.js"
+    },
+    browser: {
+        label: "--browser",
+        type: String,
+        description: "string that is forwarded to cypress to identify the browser to be used for the execution",
+        examples: ["chrome", "electron"],
+        default: "chrome"
+    },
+    dryRun: {
+        label: "--dry-run",
+        type: Boolean,
+        description: "boolean flag if the execution should only be simulated",
+        examples: [],
+        default: false
+    },
+    allure: {
+        label: "--allure",
+        type: Boolean,
+        description: "should allure be enabled or disabled",
+        examples: [],
+        default: false
+    },
+    cleanAllureReports: {
+        label: "--clean-allure-reports",
+        type: Boolean,
+        description: "should the report folders be removed before an execution?",
+        examples: [],
+        default: false
+    },
+    allureReportFolderName: {
+        label: "--allure-report-folder-name",
+        type: String,
+        description: "name of the reporting folder for the allure reports per runner",
+        examples: ["allure-report", "report", "runner-report"],
+        default: "allure-report"
+    },
+    cleanRunnerLogs: {
+        label: "--clean-runner-logs",
+        type: Boolean,
+        description: "should the runner logs be deleted before the execution?",
+        examples: [],
+        default: false
+    },
+    help: {
+        label: "--help",
+        type:Boolean,
+        description: "should the help menu be shown?",
+        examples: [],
+        default: false
+    }
+}
 
 export async function parseArgumentsIntoOptions(rawArgs) {
     const args = arg(
-        {
-            '--runner-amount': Number,
-            '--runner-annotation': String,
-            '--tags': String,
-            '--tests': String,
-            '--spec': String,
-            '--feature-folder': String,
-            '--config-file': String,
-            '--browser': String,
-            '--dry-run': Boolean,
-            '--allure': Boolean,
-            '--clean-allure-reports': Boolean,
-            '--allure-report-folder-name': String,
-            '--clean-runner-logs': Boolean,
-            '--help': Boolean
-            //'--clean-after': Boolean
-        },
+        createOptions(),
         {
             permissive: false,
             argv: rawArgs.slice(2),
         }
     );
+    scope.options = createScopeOptions(args);
+}
 
-    scope.options = {
-        runnerAmount: args['--runner-amount'] || 5, //amount of runners to spawn for the execution
-        runnerAnnotation: args['--runner-annotation'] || "@runner", //runner naming annotation to be used
-        tags: args['--tags'] || "not @wip and @regression", //string that is forwarded to cypress including the ending "and @runner-X"
-        tests: args['--tests'] || "@", //annotation which is supposed to be used to identify all tests that should get a runner assigned
-        specFile: args['--spec'] || null, //path to a specific spec feature file
-        featureFolder: args['--feature-folder'] || "./cypress/e2e", //path to the root folder in which all feature files are stored
-        configFile: args['--config-file'] || "cypress.json", //string that is forwarded to cypress to identify the config-file to be used for the execution
-        browser: args['--browser'] || "chrome", //string that is forwarded to cypress to identify the browser to be used for the execution
-        dryRun: args['--dry-run'] !== undefined, //if true, the real cypress command won't be executed
-        allure: args['--allure'] !== undefined, //should allure be enabled or disabled
-        cleanAllureReports: args['--clean-allure-reports'] !== undefined, //should the report folders be removed before an execution?
-        allureReportFolderName: args['--allure-report-folder-name'] || 'allure-report', //name of the reporting folder for the allure reports per runner
-        cleanRunnerLogs: args['--clean-runner-logs'] !== undefined, // should the runner logs be deleted before the execution?
-        helpNeeded: args['--help'] !== undefined //should the help screen be shown?
-        //cleanAfter: args['--clean-after'] !== true //WIP: if true, the feature files are cleaned directly after the test run
-    };
+function createOptions() {
+    const optionsObject = {};
+    Object.values(parameterMap).forEach((argument) => {
+        optionsObject[argument.label] = argument.type;
+    });
+    return optionsObject;
+}
+
+function createScopeOptions(args) {
+    const scopeOptionsMap = {};
+
+    Object.keys(parameterMap).forEach((key) => {
+        scopeOptionsMap[key] = args[parameterMap[key].label] || parameterMap[key].default;
+    });
+
+    return scopeOptionsMap;
 }
