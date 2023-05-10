@@ -15,12 +15,12 @@ Cypress Parallelize is a npm package for a [Cypress](https://www.cypress.io/) pr
 1. Install Cypress Parallelize in your cypress project via the terminal:
 
 ```
-npm install cypress-parallize --save-dev
+npm install cypress-parallelize --save-dev
 ```
 
 ## Execution and Parameter
 
-In order to execute a cypress execution with the support of cypress-parallize you can use the following command and parameters
+In order to execute a cypress execution with the support of cypress-parallelize you can use the following command and parameters
 
 ```bash
 cypress-parallelize [options]
@@ -29,15 +29,18 @@ cypress-parallelize [options]
 ### Options
 
 - `--runner-amount=<Number>`: number of tests to split into each runner.
-- `--runner-annotation=<String>,`: custom runner annotaction how it should be used for the automation. (E.g. @custom-runner)
+- `--runner-annotation=<String>,`: custom runner annotation how it should be used for the automation. (E.g. @custom-runner)
 - `--browser=<String>`: The browser to run tests in.
 - `--config-file=<String>`: The path to your Cypress config file.
 - `--spec=<String>`: path to the feature file to be handled by the runner.
 - `--feature-folder=<String>`: The path to the feature files of the cypress test project. 
 - `--allure=<Boolean>`: Whether or not to enable Allure report generation.
+- `--clean-allure-reports=<Boolean>`: should the allure runner reports be deleted before execution?
+- `--allure-report-folder-name=<String>`: custom naming for the allure reporting folders
+- `--clean-runner-logs=<Boolean>`: should the runner log files be cleared before execution?
 - `--tags=<String>`: String to forward to the cypress execution for the tags environment variable
 - `--tests=<String>`: String to scan the tests in the scenario feature files for, to identify which test should be assigned to a runner
-- `--dry-run=<Boolean>`: Boolean to define if the cypress-parallize execution should be a dry run
+- `--dry-run=<Boolean>`: Boolean to define if the cypress-parallelize execution should be a dry run
 
 ## Contributing
 
