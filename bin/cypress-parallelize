@@ -5,6 +5,8 @@ require = require('esm')(module /*, options*/);
 require('../src/arguments-parser').parseArgumentsIntoOptions(process.argv).then(r => {
     if(scope.options.help)
         require('../src/helper').showHelp().then(r => { console.log(r)});
+    else if(scope.options.version)
+        console.log(`Cypress Parallelize Version: ${require('../package.json').version}`);
     else
         require('../src/cypress-parallelize').executeCommandXTimes().then(r => console.log("Started the test runners"));
 });

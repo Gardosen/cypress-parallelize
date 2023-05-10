@@ -100,6 +100,13 @@ export const parameterMap = {
         description: "should the help menu be shown?",
         examples: [],
         default: false
+    },
+    version: {
+        label: "--version",
+        type: Boolean,
+        description: "show the version of cypress parallelize",
+        examples: [],
+        default: false
     }
 }
 
