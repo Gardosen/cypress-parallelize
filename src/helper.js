@@ -8,8 +8,7 @@ export async function showHelp(){
 `;
     Object.keys(parameterMap).forEach(key => {
         let parameter = parameterMap[key];
-        helpScreen += `Parameter\n  ${parameter.label} \n    Type: ${parameter.type.name} Default: ${parameter.default}\n    Description: ${parameter.description}\n    Examples: ${parameter.examples}\n`
-        helpScreen += `+-------------------------------\n`
+        helpScreen += `${parameter.label}\n    Type: ${parameter.type.name} Default: ${parameter.default}\n    Description: ${parameter.description}\n${parameter.examples.length > 0? `    Examples: ${parameter.examples}\n`:""}${parameter.requires.length > 0? `    Required parameter: ${parameter.requires}\n`:""}\n`;
     });
 
 helpScreen += `+-----------------------------------------------+`;

@@ -1,12 +1,14 @@
 import fs from "fs";
 const scope = require("./scope");
+const logger = require("./logger");
+
 
 export function assignTestRunnerAnnotation(){
-    console.log("Test Runner Assignment");
-    const filesToHandle = scope.options.specFile != null? [scope.options.specFile] : scope.featureFileList;
+    logger.log("Test Runner Assignment");
+    const filesToHandle = scope.options.spec != null? [scope.options.spec] : scope.featureFileList;
 
     const filesHandled = filesToHandle.map(file => {
-        console.log(`Handling file ${file}`);
+        logger.log(`Handling file ${file}`);
         addTagToScenariosOfFile(file);
         return file;
     });
@@ -15,14 +17,16 @@ export function assignTestRunnerAnnotation(){
 }
 
 function addTagToScenariosOfFile(file) {
-    console.log(`Assigning Test Runners to file [${file}]`);
+    logger.log(`Assigning Test Runners to file [${file}]`);
     const lines = fs.readFileSync(file, "utf-8").split('\n');
     const newLines = lines.map(line => {
         if (line.includes(scope.options.tests) && !line.includes(`${scope.options.runnerAnnotation}${scope.runnerNumber}`)) {
-            console.log(`Adding ${scope.options.runnerAnnotation}${scope.runnerNumber} to line [${line}]`);
-            line = line + ` ${scope.options.runnerAnnotation}${scope.runnerNumber}`;
-            scope.runnerNumber = (scope.runnerNumber++%scope.options.runnerAmount)+1;
-            if(scope.runnerAmountAssigned < scope.options.runnerAmount) scope.runnerAmountAssigned++;
+            logger.log(`Adding ${scope.options.runnerAnnotation}${scope.runnerNumber} to line [${line}]`);
+            if(!scope.options.dryRun) { //only do this if it is not a dryrun
+                line = line + ` ${scope.options.runnerAnnotation}${scope.runnerNumber}`;
+            }
+            scope.runnerNumber = (scope.runnerNumber++ % scope.options.runnerAmount) + 1;
+            if (scope.runnerAmountAssigned < scope.options.runnerAmount) scope.runnerAmountAssigned++;
         }
         return line;
     });

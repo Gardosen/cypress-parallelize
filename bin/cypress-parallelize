@@ -1,12 +1,48 @@
 #!/usr/bin/env node
 
-const scope  = require('../src/scope')
 require = require('esm')(module /*, options*/);
+
+const scope  = require('../src/scope')
+const { removeReportFolders, removeRunnerLogFolder, cleanFeatureFiles} = require("../src/remover");
+const fs = require("fs");
+const path = require("path");
+const {scanFeatureFiles} = require("../src/scanner");
+const {assignTestRunnerAnnotation} = require("../src/tagger");
 require('../src/arguments-parser').parseArgumentsIntoOptions(process.argv).then(r => {
-    if(scope.options.help)
-        require('../src/helper').showHelp().then(r => { console.log(r)});
-    else if(scope.options.version)
+
+    //show version info?
+    if( scope.options.version )
         console.log(`Cypress Parallelize Version: ${require('../package.json').version}`);
-    else
-        require('../src/cypress-parallelize').executeCommandXTimes().then(r => console.log("Started the test runners"));
+    else if( scope.options.help ) //show help screen?
+        require('../src/helper').showHelp().then(r => { console.log(r)});
+    else {
+        if(scope.options.allure) {
+            //if allure is enabled and the folders should be cleaned first
+            if (scope.options.cleanAllureReports) {
+                removeReportFolders();
+            }
+        }
+
+        if ( scope.options.runnerLog ) {
+            console.log("Check for log folder");
+            //check if the path exists, if not create it
+            const logFolderPath = path.join(process.cwd(), scope.options.runnerLogFolderName);
+            if (!fs.existsSync(logFolderPath)) {
+                console.log("Log folder does not exist, creating it now");
+                fs.mkdirSync(logFolderPath);
+            }
+
+            //should runner logs be removed?
+            if ( scope.options.cleanRunnerLogs ) {
+                console.log("Cleaning runner logs now")
+                removeRunnerLogFolder(logFolderPath);
+            }
+        }
+
+        scanFeatureFiles(path.join(process.cwd(),scope.options.featureFolder)); //scan the feature folder for feature files
+        cleanFeatureFiles(); //clean the found feature files from previous runner annotations (only works with the default annotation or if the custom annotation is the same as before
+        assignTestRunnerAnnotation(); //assign the test runner annotation for this run
+
+        require('../src/command-executor').executeCommandXTimes().then(r => console.log("Started the test runners"));
+    }
 });

@@ -1,16 +1,17 @@
 import path from "path";
 import fs from "fs";
 const scope = require("./scope");
+const logger = require("./logger");
 
 export function cleanFeatureFiles() {
-    const filesToClean = scope.options.specFile ? [scope.options.specFile] : scope.featureFileList;
+    const filesToClean = scope.options.spec ? [scope.options.spec] : scope.featureFileList;
 
     const cleanedFiles = filesToClean.map(file => {
         removeRunnerTagFromFile(file);
         return file;
     });
 
-    console.log(`Successfully cleaned ${cleanedFiles.length} feature files.`);
+    logger.log(`Successfully cleaned ${cleanedFiles.length} feature files.`);
 }
 
 function removeRunnerTagFromFile(file) {
@@ -25,11 +26,12 @@ function removeRunnerTagFromFile(file) {
     }).join('\n');
 
     fs.writeFileSync(filePath, handledData);
-    console.log(`Successfully removed all ${scope.options.runnerAnnotation} annotation in ${filePath}`);
+    logger.log(`Successfully removed all ${scope.options.runnerAnnotation} annotation in ${filePath}`);
 }
 
 export function removeReportFolders() {
-    const regex = new RegExp(`${scope.options.allureReportFolderName}-${scope.options.runnerAnnotation}-\\d`); // Sucht nach Ordnern, die mit "old_" beginnen
+    logger.log("Removing Report folders of the previous runners");
+    const regex = new RegExp(`${scope.options.allureReportFolderName}${scope.options.runnerAnnotation}\\d`);
     const folders = fs.readdirSync(process.cwd(), { withFileTypes: true })
         .filter(dirent => dirent.isDirectory() && regex.test(dirent.name))
         .map(dirent => `${process.cwd()}/${dirent.name}`);
@@ -38,14 +40,14 @@ export function removeReportFolders() {
     folders.forEach((folder) => {
         try {
             fs.rm(folder, { recursive: true}, ()=>{});
-            console.log(`Folder ${folder} has been deleted.`);
+            logger.log(`Folder ${folder} has been deleted.`);
         } catch (err) {
-            console.error(`Could not delete folder ${folder}:`, err);
+            logger.error(`Could not delete folder ${folder}:`, err);
         }
     });
 }
 
-export function removeRunnerLogFolder() {
-    fs.rm(path.join(process.cwd(), "runner-logs"), {recursive: true}, ()=>{});
+export function removeRunnerLogFolder(logFolderPath) {
+    fs.rm(logFolderPath, {recursive: true}, ()=>{});
 }
 
