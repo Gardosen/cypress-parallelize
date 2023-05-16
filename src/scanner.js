@@ -18,3 +18,9 @@ export function scanFeatureFiles(dir){
         }
     });
 }
+
+export function getFolderListByRegExp(regexp){
+    return fs.readdirSync(process.cwd(), { withFileTypes: true })
+        .filter(dirent => dirent.isDirectory() && regexp.test(dirent.name))
+        .map(dirent => `${process.cwd()}/${dirent.name}`);
+}

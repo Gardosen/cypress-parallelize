@@ -7,12 +7,11 @@ const { generateReport, removePendingTests, mergeAllureReport} = require('./allu
 const scope = require("./scope");
 const logger = require('./logger');
 
-
 export async function executeCommandXTimes() {
     const runnerList = [];
     for (let i = 1; i <= scope.runnerAmountAssigned; i++) {
         try {
-            const command = `npx cypress run --browser ${scope.options.browser} --config-file ${scope.options.configFile} --env allure=${scope.options.allure},allureClearSkippedTests=true,allureResultsPath=${scope.options.allureReportFolderName}${scope.options.runnerAnnotation}${i},tags="${scope.options.tags} and ${scope.options.runnerAnnotation}${i}"${scope.options.spec != null? ` --spec ${scope.options.spec}`:""}`;
+            const command = `npx cypress run --browser ${scope.options.browser} --config-file ${scope.options.configFile} --env allure=${scope.options.allure},allureClearSkippedTests=true,allureResultsPath=${scope.options.allureRunnerReportFolderName}${scope.options.runnerAnnotation}${i},tags="${scope.options.tags} and ${scope.options.runnerAnnotation}${i}"${scope.options.spec != null? ` --spec ${scope.options.spec}`:""}`;
             logger.log(`Spawning console command [${command}]`)
             if( !scope.options.dryRun ) {
                 runnerList.push(execAsync(command))
@@ -33,8 +32,9 @@ export async function executeCommandXTimes() {
                     removePendingTests(); //remove the skipped tests from each runner so there is no crazy overload of skipped tests/scenarios
                 if(scope.options.allureMergeRunnerReports)
                     mergeAllureReport();
-                if(scope.options.allureGenerateReport)
-                    generateReport(); //generate the report as a sum
+                if(scope.options.allureGenerateReport) {
+                    generateReport();
+                } //generate the report as a sum
             }
             cleanFeatureFiles(); //clean the found feature files from previous runner annotations (only works with the default annotation or if the custom annotation is the same as before
         });
