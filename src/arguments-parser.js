@@ -15,9 +15,9 @@ export const parameterMap = {
         label: "--runner-annotation",
         type: String,
         description: "annotation which is used for the runner assignment and execution",
-        examples: ["@runner-", "@executor"],
+        examples: ["@runner", "@executor"],
         requires: [],
-        default: "@runner-"
+        default: "@runner"
     },
     tags: {
         label: "--tags",
@@ -91,13 +91,45 @@ export const parameterMap = {
         requires: ["--allure"],
         default: false
     },
-    allureReportFolderName: {
-        label: "--allure-report-folder-name",
+    allureGenerateReport: {
+        label: "--allure-generate-report",
+        type: Boolean,
+        description: "shall cypress-parallelize generate the report",
+        examples: [],
+        requires: ['--allure'],
+        default: false
+    },
+    allureRunnerReportFolderName: {
+        label: "--allure-runner-report-folder-name",
         type: String,
         description: "name of the reporting folder for the allure reports per runner",
-        examples: ["allure-report", "report", "runner-report"],
+        examples: ["agent-report", "runner-report"],
         requires: ["--allure"],
-        default: "allure-report-"
+        default: "execution-report"
+    },
+    allureTestResultFolderName: {
+        label: "--allure-test-result-folder-name",
+        type: String,
+        description: "name of the web result folder of the allure report",
+        examples: ["automation-result", "test-report", "allure-report"],
+        requires: ["--allure"],
+        default: "allure-report"
+    },
+    allureMergeRunnerReports: {
+        label: "--allure-merge-runner-reports",
+        type: Boolean,
+        description: "shall the runner reports be merged",
+        examples: [],
+        requires: ['--allure'],
+        default: false
+    },
+    allureRemovePendingTests: {
+        label: "--allure-remove-pending-tests",
+        type: Boolean,
+        description: "shall the pending tests from each runner report be removed",
+        examples: [],
+        requires: ['--allure'],
+        default: false
     },
     runnerLog: {
         label: "--runner-log",
@@ -138,6 +170,22 @@ export const parameterMap = {
         examples: [],
         requires: [],
         default: false
+    },
+    domain: {
+        label: "--domain",
+        type: String,
+        description: "domain type the run is against",
+        examples: ["qa", "production","staging","develop"],
+        requires: [],
+        default: "qa"
+    },
+    type: {
+        label: "--type",
+        type: "String",
+        description: "what type of test is this parallelization executing",
+        examples: ["all","smoke", "regression", "hotfix"],
+        requires: [],
+        default: "all"
     }
 }
 
