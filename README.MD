@@ -42,6 +42,10 @@ cypress-parallelize [options]
 - `--tests=<String>`: String to scan the tests in the scenario feature files for, to identify which test should be assigned to a runner
 - `--dry-run=<Boolean>`: Boolean to define if the cypress-parallelize execution should be a dry run
 
+## Component Diagram
+
+![alt text](https://raw.githubusercontent.com/Gardosen/cypress-parallelize/c8cece9cc6005001e580cc81dccb6451dd04c41f/cypress-parallize.png?raw=true)
+
 ## Contributing
 
 I welcome contributions! If you want to help me improve this project further and add new functionality. contact me.
