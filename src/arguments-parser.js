@@ -22,18 +22,26 @@ export const parameterMap = {
     tags: {
         label: "--tags",
         type: String,
-        description: "tags to look for to which will be forwarded to cypress for the execution",
+        description: "tags string which will be forwarded to cypress for the execution in addition to the runner-annotation",
         examples: ["@smoke", "@regression"],
         requires: [],
-        default: "not @wip and @regression"
+        default: null
     },
-    tests: {
-        label: "--tests",
+    testsIncluded: {
+        label: "--tests-included",
         type: String,
         description: "annotation which is supposed to be used to identify all tests that should get a runner assigned",
         examples: ["@regression", "@smoke", "@JIRA-4457", "@1.5.4-R2"],
         requires: [],
         default: "@"
+    },
+    testsExcluded: {
+        label: "--tests-excluded",
+        type: String,
+        description: "annotation which is supposed to be used to identify all tests that should be excluded from getting a runner assigned",
+        examples: ["@wip", "@broken", "@needs-fix"],
+        requires: [],
+        default: null
     },
     spec: {
         label: "--spec",
