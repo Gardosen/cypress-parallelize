@@ -11,7 +11,6 @@ const moment = require('moment');
 export function generateReport() {
     logger.log("Generating Allure Report");
     const generation = allure(['generate', scope.options.allureRunnerReportFolderName, "-c", "-o", `test-reports/${scope.options.domain}/${scope.options.type}/${moment().format('YYYY-MM-DD--HH-mm-ss')}` ]);
-    logger.log(`Generating report with following command: [${generation}]`);
     generation.on('exit', function(exitCode) {
         console.log('Generation is finished with code:', exitCode);
     });
