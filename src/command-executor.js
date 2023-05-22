@@ -32,9 +32,13 @@ export async function executeCommandXTimes() {
     if(scope.options.dryRun) {
         logger.log("None of the commands have been executed");
     } else {
-        runnerList.forEach(promise => {
-            promise.then(result => {handleRunnerFinished(result, promise);});
-        })
+        if(scope.options.runnerLog) {
+            runnerList.forEach(promise => {
+                promise.then(result => {
+                    handleRunnerFinished(result, promise);
+                });
+            });
+        }
 
         //as this was a dry run, we do not have any promise to resolve
         Promise.all(runnerList.map(p => p.catch(e => e)))
@@ -54,23 +58,21 @@ export async function executeCommandXTimes() {
 }
 
 function handleRunnerFinished(result, promise) {
-    if(scope.options.runnerLog) {
-        logger.log(`The Runner ${promise.runnerInformation.runnerIdentifier} is done!`);
-        if (!fs.existsSync(path.join(process.cwd(),scope.options.runnerLogFolderName)))
-            fs.mkdirSync(path.join(process.cwd(),scope.options.runnerLogFolderName));
-        fs.writeFile(`${scope.options.runnerLogFolderName}/${promise.runnerInformation.runnerIdentifier}-stdout.log`, result.stdout, { flag: 'a'}, (err) => {
-            if (err) {
-                console.error(`Could not write InfoLogfile:`, err);
-            } else {
-                console.log('Logfile created');
-            }
-        });
-        fs.writeFile(`${scope.options.runnerLogFolderName}/${promise.runnerInformation.runnerIdentifier}-stderr.log`, result.stderr, { flag: 'a'}, (err) => {
-            if (err) {
-                console.error(`Could not write ErrorLogfile:`, err);
-            } else {
-                console.log('Logfile created');
-            }
-        });
-    }
+    logger.log(`The Runner ${promise.runnerInformation.runnerIdentifier} is done!`);
+    if (!fs.existsSync(path.join(process.cwd(),scope.options.runnerLogFolderName)))
+        fs.mkdirSync(path.join(process.cwd(),scope.options.runnerLogFolderName));
+    fs.writeFile(`${scope.options.runnerLogFolderName}/${promise.runnerInformation.runnerIdentifier}-stdout.log`, result.stdout, { flag: 'a'}, (err) => {
+        if (err) {
+            console.error(`Could not write InfoLogfile:`, err);
+        } else {
+            console.log('Info Logfile created');
+        }
+    });
+    fs.writeFile(`${scope.options.runnerLogFolderName}/${promise.runnerInformation.runnerIdentifier}-stderr.log`, result.stderr, { flag: 'a'}, (err) => {
+        if (err) {
+            console.error(`Could not write ErrorLogfile:`, err);
+        } else {
+            console.log('Error Logfile created');
+        }
+    });
 }
