@@ -9,9 +9,10 @@ const { generateReport, removePendingTests, mergeAllureReport} = require('./allu
 const scope = require("./scope");
 const logger = require('./logger');
 
-export async function executeCommandXTimes() {
-    const runnerList = [];
 
+const runnerList = [];
+
+export async function executeCommandXTimes() {
     for (let i = 1; i <= scope.runnerAmountAssigned; i++) {
         try {
             const command = `npx cypress run --browser ${scope.options.browser} --config-file ${scope.options.configFile} --env ${scope.options.allure? `allure=${scope.options.allure},allureClearSkippedTests=true,allureResultsPath=${scope.options.allureRunnerReportFolderName}${scope.options.runnerAnnotation}${i},`:''}tags="${scope.options.tags!==null? `${scope.options.tags} and `: '' }${scope.options.runnerAnnotation}${i}"${scope.options.spec != null? ` --spec ${scope.options.spec}`:""}`;
@@ -32,17 +33,14 @@ export async function executeCommandXTimes() {
     if(scope.options.dryRun) {
         logger.log("None of the commands have been executed");
     } else {
-        if(scope.options.runnerLog) {
-            runnerList.forEach(promise => {
-                promise.then(result => {
-                    handleRunnerFinished(result, promise);
-                });
-            });
-        }
-
         //as this was a dry run, we do not have any promise to resolve
         Promise.all(runnerList.map(p => p.catch(e => e)))
             .then((results) => {
+                if(scope.options.runnerLog) {
+                    //TODO implement handling all runners
+                    handleRunnerLogs();
+                }
+
                 if (scope.options.allure) {
                     if(scope.options.allureRemovePendingTests)
                         removePendingTests(); //remove the skipped tests from each runner so there is no crazy overload of skipped tests/scenarios
@@ -57,22 +55,17 @@ export async function executeCommandXTimes() {
     }
 }
 
-function handleRunnerFinished(result, promise) {
-    logger.log(`The Runner ${promise.runnerInformation.runnerIdentifier} is done!`);
+//WIP, not really well working right now!
+function handleRunnerLogs() {
     if (!fs.existsSync(path.join(process.cwd(),scope.options.runnerLogFolderName)))
         fs.mkdirSync(path.join(process.cwd(),scope.options.runnerLogFolderName));
-    fs.writeFile(`${scope.options.runnerLogFolderName}/${promise.runnerInformation.runnerIdentifier}-stdout.log`, result.stdout, { flag: 'a'}, (err) => {
-        if (err) {
-            console.error(`Could not write InfoLogfile:`, err);
-        } else {
-            console.log('Info Logfile created');
-        }
-    });
-    fs.writeFile(`${scope.options.runnerLogFolderName}/${promise.runnerInformation.runnerIdentifier}-stderr.log`, result.stderr, { flag: 'a'}, (err) => {
-        if (err) {
-            console.error(`Could not write ErrorLogfile:`, err);
-        } else {
-            console.log('Error Logfile created');
+    runnerList.forEach(async (runner) => {
+        const runnerPromised = await runner;
+        try {
+            logger.log(`The Runner ${runner.runnerInformation.runnerIdentifier} is done!`);
+        } finally {
+            await fs.writeFileSync(`${scope.options.runnerLogFolderName}/${runner.runnerInformation.runnerIdentifier}-stdout.log`, runnerPromised.stdout, {flag: 'a'});
+            await fs.writeFileSync(`${scope.options.runnerLogFolderName}/${runner.runnerInformation.runnerIdentifier}-stderr.log`, runnerPromised.stderr, {flag: 'a'});
         }
     });
 }
