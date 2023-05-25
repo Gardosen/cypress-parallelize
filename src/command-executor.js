@@ -75,5 +75,4 @@ function handleRunnerLogs(result, promise) {
             logger.error(error);
         }
     }
-
 }

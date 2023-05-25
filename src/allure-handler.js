@@ -18,7 +18,7 @@ export function generateReport() {
 
 export function mergeAllureReport(){
     logger.log(`Merging all runner reports now to a single folder called ${scope.options.allureRunnerReportFolderName}`);
-    const folders = scanner.getFolderListByRegExp(new RegExp(`${scope.options.allureRunnerReportFolderName}/${scope.options.runnerAnnotation}\\d`));
+    const folders = scanner.getFolderListByRegExp(new RegExp(`${scope.options.runnerAnnotation}\\d`), `${process.cwd()}/${scope.options.allureRunnerReportFolderName}`);
     folders.forEach((folder) => {
         try {
             if(!scope.options.dryRun) {
@@ -38,7 +38,7 @@ export function mergeAllureReport(){
 
 export function removePendingTests() {
     logger.log('Cleaning runner report folders from pending tests');
-    const folders = scanner.getFolderListByRegExp(new RegExp(`${scope.options.allureRunnerReportFolderName}/${scope.options.runnerAnnotation}\\d`));
+    const folders = scanner.getFolderListByRegExp(new RegExp(`${scope.options.runnerAnnotation}\\d`), `${process.cwd()}/${scope.options.allureRunnerReportFolderName}`);
 
     folders.forEach(folder => {
        const files = fs.readdirSync(folder);

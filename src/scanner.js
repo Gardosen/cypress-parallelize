@@ -19,8 +19,8 @@ export function scanFeatureFiles(dir){
     });
 }
 
-export function getFolderListByRegExp(regexp){
-    return fs.readdirSync(process.cwd(), { withFileTypes: true })
+export function getFolderListByRegExp(regexp, folderToScan = process.cwd()){
+    return fs.readdirSync(folderToScan, { withFileTypes: true })
         .filter(dirent => dirent.isDirectory() && regexp.test(dirent.name))
-        .map(dirent => `${process.cwd()}/${dirent.name}`);
+        .map(dirent => `${folderToScan}/${dirent.name}`);
 }
