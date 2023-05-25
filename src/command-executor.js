@@ -9,12 +9,13 @@ const { generateReport, removePendingTests, mergeAllureReport} = require('./allu
 const scope = require("./scope");
 const logger = require('./logger');
 
-export async function executeCommandXTimes() {
-    const runnerList = [];
 
+const runnerList = [];
+
+export async function executeCommandXTimes() {
     for (let i = 1; i <= scope.runnerAmountAssigned; i++) {
         try {
-            const command = `npx cypress run --browser ${scope.options.browser} --config-file ${scope.options.configFile} --env ${scope.options.allure? `allure=${scope.options.allure},allureClearSkippedTests=true,allureResultsPath=${scope.options.allureRunnerReportFolderName}${scope.options.runnerAnnotation}${i},`:''}tags="${scope.options.tags!==null? `${scope.options.tags} and `: '' }${scope.options.runnerAnnotation}${i}"${scope.options.spec != null? ` --spec ${scope.options.spec}`:""}`;
+            const command = `npx cypress run --browser ${scope.options.browser} --config-file ${scope.options.configFile} --env ${scope.options.allure? `allure=${scope.options.allure},allureClearSkippedTests=true,allureResultsPath=${scope.options.allureRunnerReportFolderName}/${scope.options.runnerAnnotation}${i},`:''}tags="${scope.options.tags!==null? `${scope.options.tags} and `: '' }${scope.options.runnerAnnotation}${i}"${scope.options.spec != null? ` --spec ${scope.options.spec}`:""}`;
             logger.log(`Spawning console command [${command}]`)
             if( !scope.options.dryRun ) {
                 const promise = execAsync(command);
@@ -22,6 +23,9 @@ export async function executeCommandXTimes() {
                     runnerIdentifier: `${scope.options.runnerAnnotation}${i}`,
                     command: command
                 }
+                promise.then((result) => {
+                   handleRunnerLogs(result, promise);
+                });
                 runnerList.push(promise);
             }
         } catch (error) {
@@ -32,14 +36,6 @@ export async function executeCommandXTimes() {
     if(scope.options.dryRun) {
         logger.log("None of the commands have been executed");
     } else {
-        if(scope.options.runnerLog) {
-            runnerList.forEach(promise => {
-                promise.then(result => {
-                    handleRunnerFinished(result, promise);
-                });
-            });
-        }
-
         //as this was a dry run, we do not have any promise to resolve
         Promise.all(runnerList.map(p => p.catch(e => e)))
             .then((results) => {
@@ -57,22 +53,27 @@ export async function executeCommandXTimes() {
     }
 }
 
-function handleRunnerFinished(result, promise) {
-    logger.log(`The Runner ${promise.runnerInformation.runnerIdentifier} is done!`);
-    if (!fs.existsSync(path.join(process.cwd(),scope.options.runnerLogFolderName)))
-        fs.mkdirSync(path.join(process.cwd(),scope.options.runnerLogFolderName));
-    fs.writeFile(`${scope.options.runnerLogFolderName}/${promise.runnerInformation.runnerIdentifier}-stdout.log`, result.stdout, { flag: 'a'}, (err) => {
-        if (err) {
-            console.error(`Could not write InfoLogfile:`, err);
-        } else {
-            console.log('Info Logfile created');
+//WIP, not really well working right now!
+function handleRunnerLogs(result, promise) {
+    if (scope.options.runnerLog) {
+        try {
+            if (!fs.existsSync(path.join(process.cwd(), scope.options.runnerLogFolderName)))
+                fs.mkdirSync(path.join(process.cwd(), scope.options.runnerLogFolderName));
+            const errorLogStream = fs.createWriteStream(`${scope.options.runnerLogFolderName}/${promise.runnerInformation.runnerIdentifier}-stdout.log`, {flags: 'a'});
+            const infoLogStream = fs.createWriteStream(`${scope.options.runnerLogFolderName}/${promise.runnerInformation.runnerIdentifier}-stderr.log`, {flags: 'a'});
+            try {
+                logger.log(`The Runner ${promise.runnerInformation.runnerIdentifier} is done!`);
+                errorLogStream.write(result.stderr);
+                infoLogStream.write(result.stdout);
+            } catch (error) {
+                logger.error(error);
+            } finally {
+                errorLogStream.close();
+                infoLogStream.close();
+            }
+        } catch (error) {
+            logger.error(error);
         }
-    });
-    fs.writeFile(`${scope.options.runnerLogFolderName}/${promise.runnerInformation.runnerIdentifier}-stderr.log`, result.stderr, { flag: 'a'}, (err) => {
-        if (err) {
-            console.error(`Could not write ErrorLogfile:`, err);
-        } else {
-            console.log('Error Logfile created');
-        }
-    });
+    }
+
 }
