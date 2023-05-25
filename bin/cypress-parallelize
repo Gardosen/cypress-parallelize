@@ -8,13 +8,14 @@ const fs = require("fs");
 const path = require("path");
 const {scanFeatureFiles} = require("../src/scanner");
 const {assignTestRunnerAnnotation} = require("../src/tagger");
+const logger = require('../src/logger')
 require('../src/arguments-parser').parseArgumentsIntoOptions(process.argv).then(r => {
 
     //show version info?
     if( scope.options.version )
-        console.log(`Cypress Parallelize Version: ${require('../package.json').version}`);
+        logger.log(`Cypress Parallelize Version: ${require('../package.json').version}`);
     else if( scope.options.help ) //show help screen?
-        require('../src/helper').showHelp().then(r => { console.log(r)});
+        require('../src/helper').showHelp().then(r => { logger.log(r)});
     else {
         if(scope.options.allure) {
             //if allure is enabled and the folders should be cleaned first
@@ -24,11 +25,11 @@ require('../src/arguments-parser').parseArgumentsIntoOptions(process.argv).then(
         }
 
         if ( scope.options.runnerLog ) {
-            console.log("Check for log folder");
+            logger.log("Check for log folder");
             //check if the path exists, if not create it
             const logFolderPath = path.join(process.cwd(), scope.options.runnerLogFolderName);
             if (!fs.existsSync(logFolderPath)) {
-                console.log("Log folder does not exist, creating it now");
+                logger.log("Log folder does not exist, creating it now");
                 fs.mkdirSync(logFolderPath);
             }
 
@@ -43,6 +44,11 @@ require('../src/arguments-parser').parseArgumentsIntoOptions(process.argv).then(
         cleanFeatureFiles(); //clean the found feature files from previous runner annotations (only works with the default annotation or if the custom annotation is the same as before
         assignTestRunnerAnnotation(); //assign the test runner annotation for this run
 
-        require('../src/command-executor').executeCommandXTimes().then(r => console.log("Started the test runners"));
+        console.log(`Cypress Parallelize Version: ${require('../package.json').version}`);
+        try {
+            require('../src/command-executor').executeCommandXTimes().then(r => console.log("Started the test runners"));
+        } catch (error) {
+            logger.log(error)
+        }
     }
 });
