@@ -59,8 +59,8 @@ function handleRunnerLogs(result, promise) {
         try {
             if (!fs.existsSync(path.join(process.cwd(), scope.options.runnerLogFolderName)))
                 fs.mkdirSync(path.join(process.cwd(), scope.options.runnerLogFolderName));
-            const errorLogStream = fs.createWriteStream(`${scope.options.runnerLogFolderName}/${promise.runnerInformation.runnerIdentifier}-stdout.log`, {flags: 'a'});
-            const infoLogStream = fs.createWriteStream(`${scope.options.runnerLogFolderName}/${promise.runnerInformation.runnerIdentifier}-stderr.log`, {flags: 'a'});
+            const errorLogStream = fs.createWriteStream(`${scope.options.runnerLogFolderName}/${promise.runnerInformation.runnerIdentifier}-stderr.log`, {flags: 'a'});
+            const infoLogStream = fs.createWriteStream(`${scope.options.runnerLogFolderName}/${promise.runnerInformation.runnerIdentifier}-stdout.log`, {flags: 'a'});
             try {
                 logger.log(`The Runner ${promise.runnerInformation.runnerIdentifier} is done!`);
                 errorLogStream.write(result.stderr);
