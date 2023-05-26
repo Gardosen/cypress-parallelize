@@ -25,6 +25,7 @@ export function executeCommandXTimes() {
                 promise.then((result) => {
                    handleRunnerLogs(result, promise);
                 }).catch((error)=>{
+                    handleRunnerLogs(error, promise);
                     logger.error(`Iteration ${i + 1} - Error: ${error.message}`);
                 });
                 runnerList.push(promise);
@@ -36,7 +37,6 @@ export function executeCommandXTimes() {
 //WIP, not really well working right now!
 function handleRunnerLogs(result, promise) {
     if (scope.options.runnerLog) {
-        try {
             if (!fs.existsSync(path.join(process.cwd(), scope.options.runnerLogFolderName)))
                 fs.mkdirSync(path.join(process.cwd(), scope.options.runnerLogFolderName));
             const errorLogStream = fs.createWriteStream(`${scope.options.runnerLogFolderName}/${promise.runnerInformation.runnerIdentifier}-stderr.log`, {flags: 'a'});
@@ -51,8 +51,5 @@ function handleRunnerLogs(result, promise) {
                 errorLogStream.close();
                 infoLogStream.close();
             }
-        } catch (error) {
-            logger.error(error);
-        }
     }
 }

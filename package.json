@@ -1,6 +1,6 @@
 {
   "name": "@gardosen/cypress-parallelize",
-  "version": "1.7.3",
+  "version": "1.7.4",
   "description": "cli command to parallelize cypress executions",
   "main": "src/index.js",
   "keywords": [
@@ -8,7 +8,14 @@
     "cypress-parallelize",
     "cypress"
   ],
-  "author": "Marco Bierbach",
+  "authors": [
+    {
+      "name": "Marco Bierbach"
+    },
+    {
+      "name": "Jorge Gonzalez Pliego"
+    }
+  ],
   "license": "ISC",
   "bin": {
     "cypress-parallelize": "bin/cypress-parallelize",
