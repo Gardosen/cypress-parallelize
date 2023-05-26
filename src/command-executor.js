@@ -14,7 +14,6 @@ const runnerList = [];
 
 export function executeCommandXTimes() {
     for (let i = 1; i <= scope.runnerAmountAssigned; i++) {
-        try {
             const command = `npx cypress run --browser ${scope.options.browser} --config-file ${scope.options.configFile} --env ${scope.options.allure? `allure=${scope.options.allure},allureClearSkippedTests=true,allureResultsPath=${scope.options.allureRunnerReportFolderName}/${scope.options.runnerAnnotation}${i},`:''}tags="${scope.options.tags!==null? `${scope.options.tags} and `: '' }${scope.options.runnerAnnotation}${i}"${scope.options.spec != null? ` --spec ${scope.options.spec}`:""}`;
             logger.log(`Spawning console command [${command}]`)
             if( !scope.options.dryRun ) {
@@ -25,14 +24,12 @@ export function executeCommandXTimes() {
                 }
                 promise.then((result) => {
                    handleRunnerLogs(result, promise);
+                }).catch((error)=>{
+                    logger.error(`Iteration ${i + 1} - Error: ${error.message}`);
                 });
                 runnerList.push(promise);
             }
-        } catch (error) {
-            logger.error(`Iteration ${i + 1} - Error: ${error.message}`);
-        }
     }
-
     return runnerList;
 }
 

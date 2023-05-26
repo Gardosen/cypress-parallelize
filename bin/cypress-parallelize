@@ -10,6 +10,7 @@ const {scanFeatureFiles} = require("../src/scanner");
 const {assignTestRunnerAnnotation} = require("../src/tagger");
 const logger = require('../src/logger')
 const {removePendingTests, mergeAllureReport, generateReport} = require("../src/allure-handler");
+const {error} = require("../src/logger");
 require('../src/arguments-parser').parseArgumentsIntoOptions(process.argv).then(r => {
 
     //show version info?
@@ -56,6 +57,8 @@ require('../src/arguments-parser').parseArgumentsIntoOptions(process.argv).then(
                     generateReport(); //generate the report as a sum
             }
             cleanFeatureFiles(); //clean the found feature files from previous runner annotations (only works with the default annotation or if the custom annotation is the same as before
+        }).catch((error) => {
+            logger.log("Process Terminated with error : "+error);
         });
     }
 });
