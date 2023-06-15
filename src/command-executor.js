@@ -1,13 +1,13 @@
 import fs from "fs";
 import path from "path";
 
-const { exec } = require('child_process');
-const { promisify } = require('util');
-const execAsync = promisify(exec);
-const { cleanFeatureFiles } = require("./remover");
-const { generateReport, removePendingTests, mergeAllureReport} = require('./allure-handler');
-const scope = require("./scope");
-const logger = require('./logger');
+const { exec } = require( 'child_process' );
+const { promisify } = require( 'util' );
+const execAsync = promisify( exec );
+const { cleanFeatureFiles } = require( './remover' );
+const { generateReport, removePendingTests, mergeAllureReport } = require( './allure-handler' );
+const scope = require( './scope' );
+const logger = require( './logger' );
 
 
 const runnerList = [];
@@ -18,6 +18,7 @@ export function executeCommandXTimes() {
             logger.log(`Spawning console command [${command}]`)
             if( !scope.options.dryRun ) {
                 const promise = execAsync(command);
+
                 promise.runnerInformation = {
                     runnerIdentifier: `${scope.options.runnerAnnotation}${i}`,
                     command: command
@@ -26,7 +27,7 @@ export function executeCommandXTimes() {
                    handleRunnerLogs(result, promise);
                 }).catch((error)=>{
                     handleRunnerLogs(error, promise);
-                    logger.error(`Iteration ${i + 1} - Error: ${error.message}`);
+                    logger.error(`Iteration ${i} - Error: ${error.message}`);
                 });
                 runnerList.push(promise);
             }

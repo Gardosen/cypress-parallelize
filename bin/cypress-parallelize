@@ -13,6 +13,7 @@ const {removePendingTests, mergeAllureReport, generateReport} = require("../src/
 const {error} = require("../src/logger");
 require('../src/arguments-parser').parseArgumentsIntoOptions(process.argv).then(r => {
 
+    logger.log(`Cypress Parallelize Version: ${require('../package.json').version}`);
     //show version info?
     if( scope.options.version )
         logger.log(`Cypress Parallelize Version: ${require('../package.json').version}`);
@@ -38,7 +39,7 @@ require('../src/arguments-parser').parseArgumentsIntoOptions(process.argv).then(
             //should runner logs be removed?
             if ( scope.options.cleanRunnerLogs ) {
                 logger.log("Cleaning runner logs now")
-                removeRunnerLogFolder(logFolderPath);
+                removeRunnerLogFolder( logFolderPath );
             }
         }
 
@@ -46,19 +47,23 @@ require('../src/arguments-parser').parseArgumentsIntoOptions(process.argv).then(
         cleanFeatureFiles(); //clean the found feature files from previous runner annotations (only works with the default annotation or if the custom annotation is the same as before
         assignTestRunnerAnnotation(); //assign the test runner annotation for this run
 
-        logger.log(`Cypress Parallelize Version: ${require('../package.json').version}`);
-        Promise.all(require('../src/command-executor').executeCommandXTimes()).then((results) => {
+        let arrayOfPromises =require('../src/command-executor').executeCommandXTimes();
+        Promise.all(arrayOfPromises)
+        .catch((error) => {
+            logger.error("Process Terminated with error : "+error);
+            return arrayOfPromises;
+        })
+        .then((results) => {
+            logger.log("All Promises are done!");
             if (scope.options.allure) {
-                if(scope.options.allureRemovePendingTests)
+                if (scope.options.allureRemovePendingTests)
                     removePendingTests(); //remove the skipped tests from each runner so there is no crazy overload of skipped tests/scenarios
-                if(scope.options.allureMergeRunnerReports)
+                if (scope.options.allureMergeRunnerReports)
                     mergeAllureReport();
-                if(scope.options.allureGenerateReport)
+                if (scope.options.allureGenerateReport)
                     generateReport(); //generate the report as a sum
             }
             cleanFeatureFiles(); //clean the found feature files from previous runner annotations (only works with the default annotation or if the custom annotation is the same as before
-        }).catch((error) => {
-            logger.error("Process Terminated with error : "+error);
         });
     }
 });
