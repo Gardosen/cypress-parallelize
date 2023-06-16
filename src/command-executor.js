@@ -4,8 +4,6 @@ import path from "path";
 const { exec } = require( 'child_process' );
 const { promisify } = require( 'util' );
 const execAsync = promisify( exec );
-const { cleanFeatureFiles } = require( './remover' );
-const { generateReport, removePendingTests, mergeAllureReport } = require( './allure-handler' );
 const scope = require( './scope' );
 const logger = require( './logger' );
 
@@ -27,7 +25,8 @@ export function executeCommandXTimes() {
                    handleRunnerLogs(result, promise);
                 }).catch((error)=>{
                     handleRunnerLogs(error, promise);
-                    logger.error(`Iteration ${i} - Error: ${error.message}`);
+                    //we do not log anything here unless its possible to avoid this incorrect error report about the failed command
+                    //logger.error(`Iteration ${i} - Error: ${error.message}`);
                 });
                 runnerList.push(promise);
             }

@@ -1,6 +1,6 @@
 {
   "name": "@gardosen/cypress-parallelize",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "cli command to parallelize cypress executions",
   "main": "src/index.js",
   "keywords": [
@@ -28,10 +28,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "allure-commandline": "2.22.0",
     "arg": "5.0.2",
     "esm": "3.2.25",
     "fs-extra": "11.1.1",
-    "allure-commandline": "2.22.0",
     "moment": "2.29.4"
   },
   "bugs": {

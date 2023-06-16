@@ -10,8 +10,7 @@ const {scanFeatureFiles} = require("../src/scanner");
 const {assignTestRunnerAnnotation} = require("../src/tagger");
 const logger = require('../src/logger')
 const {removePendingTests, mergeAllureReport, generateReport} = require("../src/allure-handler");
-const {error} = require("../src/logger");
-require('../src/arguments-parser').parseArgumentsIntoOptions(process.argv).then(r => {
+require('../src/arguments-parser').parseArgumentsIntoOptions(process.argv).then(() => {
 
     logger.log(`Cypress Parallelize Version: ${require('../package.json').version}`);
     //show version info?
@@ -48,12 +47,8 @@ require('../src/arguments-parser').parseArgumentsIntoOptions(process.argv).then(
         assignTestRunnerAnnotation(); //assign the test runner annotation for this run
 
         let arrayOfPromises =require('../src/command-executor').executeCommandXTimes();
-        Promise.all(arrayOfPromises)
-        .catch((error) => {
-            logger.error("Process Terminated with error : "+error);
-            return arrayOfPromises;
-        })
-        .then((results) => {
+        Promise.allSettled(arrayOfPromises)
+        .then(() => {
             logger.log("All Promises are done!");
             if (scope.options.allure) {
                 if (scope.options.allureRemovePendingTests)
