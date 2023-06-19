@@ -10,7 +10,7 @@ const {scanFeatureFiles} = require("../src/scanner");
 const {assignTestRunnerAnnotation} = require("../src/tagger");
 const logger = require('../src/logger')
 const {removePendingTests, mergeAllureReport, generateReport} = require("../src/allure-handler");
-require('../src/arguments-parser').parseArgumentsIntoOptions(process.argv).then(() => {
+require('../src/arguments-parser').parseArgumentsIntoOptions(process.argv).then(async () => {
 
     logger.log(`Cypress Parallelize Version: ${require('../package.json').version}`);
     //show version info?
@@ -46,19 +46,28 @@ require('../src/arguments-parser').parseArgumentsIntoOptions(process.argv).then(
         cleanFeatureFiles(); //clean the found feature files from previous runner annotations (only works with the default annotation or if the custom annotation is the same as before
         assignTestRunnerAnnotation(); //assign the test runner annotation for this run
 
-        let arrayOfPromises =require('../src/command-executor').executeCommandXTimes();
-        Promise.allSettled(arrayOfPromises)
-        .then(() => {
-            logger.log("All Promises are done!");
-            if (scope.options.allure) {
-                if (scope.options.allureRemovePendingTests)
-                    removePendingTests(); //remove the skipped tests from each runner so there is no crazy overload of skipped tests/scenarios
-                if (scope.options.allureMergeRunnerReports)
-                    mergeAllureReport();
-                if (scope.options.allureGenerateReport)
-                    generateReport(); //generate the report as a sum
-            }
-            cleanFeatureFiles(); //clean the found feature files from previous runner annotations (only works with the default annotation or if the custom annotation is the same as before
-        });
+        const commands = generateCommandsMap();
+        await Promise.all(commands.map(require('../src/command-executor').executeCommandXTimes));
+
+        logger.log("All Promises are done!");
+        if (scope.options.allure) {
+            if (scope.options.allureRemovePendingTests)
+                removePendingTests(); //remove the skipped tests from each runner so there is no crazy overload of skipped tests/scenarios
+            if (scope.options.allureMergeRunnerReports)
+                mergeAllureReport();
+            if (scope.options.allureGenerateReport)
+                generateReport(); //generate the report as a sum
+        }
+        cleanFeatureFiles(); //clean the found feature files from previous runner annotations (only works with the default annotation or if the custom annotation is the same as before
     }
 });
+
+function generateCommandsMap() {
+    let commandsArray = [];
+    for (let i = 1; i <= scope.runnerAmountAssigned; i++) {
+        const command = `npx cypress run --reporter json-stream --browser ${scope.options.browser} --config-file ${scope.options.configFile} --env ${scope.options.allure ? `allure=${scope.options.allure},allureClearSkippedTests=true,allureResultsPath=${scope.options.allureRunnerReportFolderName}/${scope.options.runnerAnnotation}${i},` : ''}tags="${scope.options.tags !== null ? `${scope.options.tags} and ` : ''}${scope.options.runnerAnnotation}${i}"${scope.options.spec != null ? ` --spec ${scope.options.spec}` : ""}`;
+        logger.log(`Spawning console command [${command}]`)
+        commandsArray.push({command: command, runnerIdentifier: `${scope.options.runnerIdentifier}${i}`});
+    }
+    return commandsArray;
+}
